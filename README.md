@@ -41,3 +41,12 @@ video-crawler/
 │
 ├── requirements.txt
 └── README.md
+
+## 🐍 Python Dependencies
+
+Create `requirements.txt`:
+
+```txt
+yt-dlp
+selenium
+webdriver-manager
