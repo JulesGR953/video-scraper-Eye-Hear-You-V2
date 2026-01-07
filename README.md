@@ -1,219 +1,295 @@
-# YouTube Shorts Scam Scraper
+# YouTube Scam Video Crawler
 
-A collection of Python-based YouTube Shorts crawlers designed to **discover, classify, and optionally download scam-related Shorts** using Selenium and `yt-dlp`.
+A Python-based web scraping tool designed to identify and collect YouTube Shorts videos that exhibit characteristics of common scam types including crypto scams, gift card generator scams, and fake giveaways.
 
-This repository includes **three specialized scrapers**:
+## Features
 
-1. **Crypto Scam Shorts Scraper**
-2. **Giveaway Scam Shorts Scraper**
-3. **Gift Card / Code Generator Scam Shorts Scraper**
+- 🔍 **Multi-category scam detection**: Crypto, gift card generators, and giveaway scams
+- 🎯 **Intelligent filtering**: View count limits and duration checks
+- 📊 **Comprehensive metadata extraction**: Title, description, tags, engagement metrics
+- 💾 **Automated video downloading**: Optional MP4 downloads
+- 🔄 **Smart crawling**: Recursive channel exploration for efficient data collection
+- 📝 **Structured JSON output**: Organized metadata storage
 
-Each scraper:
+## Scam Categories
 
-- Discovers Shorts via YouTube search
-- Filters videos by duration (≤ 60 seconds)
-- Filters videos by view count
-- Uses keyword heuristics to label scam content
-- Saves structured JSON metadata
-- Optionally downloads the video file
+### 1. Crypto Scams (`video_crawler_crypto.py`)
+Targets videos promoting:
+- Free Bitcoin/cryptocurrency giveaways
+- Crypto doublers and generators
+- Celebrity impersonation (e.g., "Elon Musk giveaway")
+- Guaranteed returns and investment scams
+- Fake airdrops and mining offers
 
----
+### 2. Gift Card Scams (`video_crawler_giftcards.py`)
+Targets videos promoting:
+- Free gift card generators (PSN, Xbox, Steam, etc.)
+- Unlimited code generators
+- Fake redemption websites
+- "Working" gift card hacks
 
-## ⚠️ Legal & Ethical Notice
+### 3. Giveaway Scams (`video_crawler_giveaway.py`)
+Targets videos promoting:
+- Free iPhone/PS5/electronics giveaways
+- Cash giveaways (PayPal, Venmo, CashApp)
+- "Guaranteed winner" schemes
+- Fake influencer giveaways
 
-This project is for **research, academic, security, and anti-fraud purposes only**.
+## Prerequisites
 
-- Do **not** harass or target creators  
-- Respect YouTube’s Terms of Service  
-- Use collected data responsibly  
+- Python 3.7 or higher
+- Google Chrome browser
+- Windows OS (path configurations are Windows-specific)
 
-You are responsible for how this software is used.
+## Installation
 
----
+### 1. Clone the Repository
 
-## 📁 Repository Structure
+```bash
+git clone https://github.com/yourusername/youtube-scam-crawler.git
+cd youtube-scam-crawler
+```
 
-```text
-video-crawler/
-│
-├── crypto_scam_scraper.py
-├── giveaway_scam_scraper.py
-├── giftcard_scam_scraper.py
-│
-├── requirements.txt
-└── README.md
-🐍 Python Dependencies & Installation
-Create requirements.txt:
+### 2. Install Required Dependencies
 
-txt
-Copy code
-yt-dlp
-selenium
-webdriver-manager
-Then install dependencies with:
+```bash
+pip install yt-dlp selenium webdriver-manager
+```
 
-bash
-Copy code
-pip install -r requirements.txt
-No manual ChromeDriver setup is required. webdriver-manager will:
+**Required packages:**
+- `yt-dlp` - YouTube video downloader and metadata extractor
+- `selenium` - Web browser automation
+- `webdriver-manager` - Automatic ChromeDriver management
 
-Detect your Chrome version
+### 3. Configure Output Directory
 
-Download the correct driver automatically
+Edit the `OUTPUT_DIR` variable in each script to match your desired output location:
 
-Cache it for future use
+```python
+OUTPUT_DIR = r"C:\Users\YourUsername\Desktop\video_crawler"
+```
 
-If Chrome is missing, download it here: Google Chrome
+## Configuration
 
-⚙️ Configuration (CRITICAL)
-Each scraper script contains a configuration block at the top:
+Each script contains configurable parameters at the top:
 
-python
-Copy code
-OUTPUT_DIR = r"C:\Users\YourName\Desktop\video_crawler"
-MAX_VIDEOS = 25
+```python
+OUTPUT_DIR = r"C:\Users\Jules Gregory\Desktop\video_crawler"  # Output directory
+MAX_VIDEOS = 5                    # Maximum videos to collect
+SCROLL_ROUNDS = 8                 # Number of scroll iterations per search
+DOWNLOAD_VIDEOS = True            # Enable/disable video downloading
+MAX_VIEW_COUNT = 30000            # Skip videos exceeding this view count
+```
+
+### Recommended Settings
+
+**For testing:**
+```python
+MAX_VIDEOS = 5-10
 SCROLL_ROUNDS = 8
 DOWNLOAD_VIDEOS = True
-MAX_VIEW_COUNT = 20000
-Variable	Purpose
-OUTPUT_DIR	Root directory for all outputs
-MAX_VIDEOS	Maximum Shorts collected per run
-SCROLL_ROUNDS	Search depth (higher = more Shorts)
-DOWNLOAD_VIDEOS	Set False for metadata-only mode
-MAX_VIEW_COUNT	Filters out viral / legitimate content
+```
 
-▶️ How To Run
-Crypto Scam Scraper
+**For production data collection:**
+```python
+MAX_VIDEOS = 2000
+SCROLL_ROUNDS = 15-20
+DOWNLOAD_VIDEOS = True  # Requires significant storage
+```
 
-bash
-Copy code
-python crypto_scam_scraper.py
-Giveaway Scam Scraper
+## Usage
 
-bash
-Copy code
-python giveaway_scam_scraper.py
-Gift Card Scam Scraper
+### Running a Crawler
 
-bash
-Copy code
-python giftcard_scam_scraper.py
-Chrome will open automatically and begin crawling YouTube Shorts.
+Execute any of the three crawlers:
 
-📦 Output Directory Structure
-text
-Copy code
+```bash
+# Crypto scam crawler
+python video_crawler_crypto.py
+
+# Gift card scam crawler
+python video_crawler_giftcards.py
+
+# Giveaway scam crawler
+python video_crawler_giveaway.py
+```
+
+### What Happens During Execution
+
+1. **Chrome Browser Launch**: Selenium opens an automated Chrome window
+2. **Search Query Execution**: Iterates through predefined search queries
+3. **Page Scrolling**: Scrolls multiple times to load more Shorts
+4. **Video Discovery**: Extracts video links from search results
+5. **Metadata Extraction**: Uses yt-dlp to fetch video information
+6. **Filtering**: Applies keyword detection and view count filters
+7. **Data Saving**: Stores metadata as JSON files
+8. **Video Download**: (Optional) Downloads matching videos as MP4 files
+9. **Channel Crawling**: Recursively explores channels of scam videos
+
+### Output Structure
+
+```
 video_crawler/
-│
 ├── metadata/
 │   ├── youtube_shorts_crypto/
-│   ├── youtube_shorts_giveaway/
-│   └── youtube_shorts_giftcard/
-│
-├── videos/
-│   ├── youtube_shorts_crypto/
-│   ├── youtube_shorts_giveaway/
-│   └── youtube_shorts_giftcard/
-🧾 Metadata JSON Schema
-Each discovered video produces a structured JSON file:
+│   │   ├── youtube_VIDEO_ID_1.json
+│   │   └── youtube_VIDEO_ID_2.json
+│   ├── youtube_shorts_giftcard/
+│   │   └── ...
+│   └── youtube_shorts_giveaway/
+│       └── ...
+└── videos/
+    ├── youtube_shorts_crypto/
+    │   ├── youtube_VIDEO_ID_1.mp4
+    │   └── youtube_VIDEO_ID_2.mp4
+    ├── youtube_shorts_giftcard/
+    │   └── ...
+    └── youtube_shorts_giveaway/
+        └── ...
+```
 
-json
-Copy code
+### Metadata JSON Format
+
+Each video generates a JSON file with the following structure:
+
+```json
 {
-  "video_id": "youtube_xxxxx",
+  "video_id": "youtube_ABC123XYZ",
   "platform": "youtube",
-  "video_url": "https://www.youtube.com/shorts/...",
-  "title": "...",
-  "description": "...",
-  "uploader": "...",
-  "channel": "...",
-  "upload_date": "YYYYMMDD",
-  "duration": 42,
-  "view_count": 15321,
-  "like_count": 120,
-  "comment_count": 18,
-  "tags": [],
-  "hashtags": ["#crypto", "#giveaway"],
+  "video_url": "https://www.youtube.com/shorts/ABC123XYZ",
+  "title": "Video Title",
+  "description": "Video description...",
+  "uploader": "Channel Name",
+  "channel": "Channel Name",
+  "upload_date": "20240115",
+  "duration": 45,
+  "view_count": 15000,
+  "like_count": 500,
+  "comment_count": 120,
+  "tags": ["tag1", "tag2"],
+  "hashtags": ["#scam", "#free"],
   "is_short": true,
   "label": "Scam",
   "scam_type": "Crypto Scam",
-  "scraped_at": "2026-01-07 10:12:00",
-  "scraper_id": "HOSTNAME"
+  "scraped_at": "2024-01-15 14:30:00",
+  "scraper_id": "COMPUTER-NAME"
 }
-🎯 Use Cases
-Machine learning dataset generation
+```
 
-Scam trend analysis
+## Customization
 
-Platform moderation tooling
+### Adding Custom Search Queries
 
-Academic and security research
+Edit the `SEARCH_QUERIES` list in any script:
 
-🛑 Common Issues & Fixes
-Chrome Opens Then Closes
+```python
+SEARCH_QUERIES = [
+    "your custom query",
+    "another search term",
+    # ... more queries
+]
+```
 
-Install Google Chrome
+### Modifying Keyword Detection
 
-Update Chrome to the latest version
+Update the keyword lists to refine scam detection:
 
-CAPTCHA / No Results
+```python
+CRYPTO_SCAM_KEYWORDS = [
+    "bitcoin",
+    "free crypto",
+    # ... add your keywords
+]
+```
 
-Increase delays (time.sleep)
+### Running in Headless Mode
 
-Reduce SCROLL_ROUNDS
+Uncomment the headless option in `setup_driver()`:
 
-Avoid aggressive crawling behavior
+```python
+options.add_argument("--headless")  # Runs Chrome without GUI
+```
 
-yt-dlp Errors
+## Interrupting Execution
 
-bash
-Copy code
-pip install -U yt-dlp
-🚀 Scaling Recommendations
-Start in metadata-only mode
+Press `Ctrl+C` at any time to gracefully stop the crawler. The script will:
+- Close the Chrome browser
+- Display final statistics
+- Preserve all collected data
 
-Increase MAX_VIDEOS gradually
+## Troubleshooting
 
-Avoid parallel scraper executions
+### Common Issues
 
-Rotate IPs / proxies for large-scale crawls
+**ChromeDriver Issues:**
+- The script automatically downloads the correct ChromeDriver version
+- If issues persist, manually update Chrome browser
 
-Expect CAPTCHAs at scale
+**Rate Limiting:**
+- YouTube may temporarily block requests if crawling too aggressively
+- Increase sleep intervals: `time.sleep(random.uniform(3, 7))`
 
-🧪 Research Notes
-Keyword-based heuristics are intentionally conservative
+**Memory Issues:**
+- Reduce `MAX_VIDEOS` for large collection runs
+- Disable video downloading: `DOWNLOAD_VIDEOS = False`
 
-False positives are expected
+**Encoding Errors:**
+- Scripts use UTF-8 encoding by default
+- Windows users: ensure console supports UTF-8 or redirect output
 
-Designed for dataset generation, not enforcement
+## Ethical Considerations
 
-Ideal as a preprocessing step before ML classification
+⚠️ **Important Notice:**
 
-🛣 Roadmap
-Unified scraper with category flags
+- This tool is designed for **research and educational purposes**
+- Respect YouTube's Terms of Service and robots.txt
+- Implement appropriate rate limiting
+- Do not use collected data to harm or harass content creators
+- Consider the ethical implications of automated scraping
 
-Proxy & IP rotation
+## Legal Disclaimer
 
-CSV export support
+This tool is provided for educational and research purposes only. Users are responsible for ensuring their use complies with:
+- YouTube's Terms of Service
+- Applicable copyright laws
+- Data protection regulations (GDPR, CCPA, etc.)
+- Local laws regarding web scraping
 
-Multi-threaded metadata collection
+The authors assume no liability for misuse of this software.
 
-TikTok / Instagram Reels support
+## Performance Notes
 
-ML-based scam classifier
+- **Speed**: ~2-5 videos per minute (depending on network and configuration)
+- **Storage**: Each video ~5-30MB; metadata ~2-5KB per video
+- **Network**: Moderate bandwidth usage; respectful delays implemented
 
-🤝 Contributing
-Contributions are welcome for:
+## Future Improvements
 
-New scam categories
+- [ ] Multi-platform support (TikTok, Instagram Reels)
+- [ ] Machine learning-based scam classification
+- [ ] Database integration (MongoDB, PostgreSQL)
+- [ ] Web dashboard for data visualization
+- [ ] Proxy support for distributed crawling
+- [ ] Resume functionality for interrupted runs
 
-Keyword heuristic improvements
+## Contributing
 
-Performance optimization
+Contributions are welcome! Please:
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Submit a pull request
 
-Dataset quality enhancements
+## License
 
-📜 License
-MIT License
+MIT License - See LICENSE file for details
 
-Use responsibly.
+## Contact
+
+For questions, issues, or collaboration:
+- Open an issue on GitHub
+- Email: your.email@example.com
+
+---
+
+**Disclaimer**: This tool identifies potential scam content based on keyword patterns. Not all flagged content is necessarily fraudulent, and manual review is recommended for research purposes.
